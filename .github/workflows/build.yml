@@ -39,6 +39,6 @@ jobs:
           export NIXPKGS_ALLOW_UNFREE=1
           for pkg in $(find pkgs -mindepth 1 -maxdepth 1 -type d -exec basename {} \;); do
             echo "🔨 Building $pkg"
-            nix build .#${pkg} --impure --print-out-paths | cachix push my-nix-cache
+            nix build .#${pkg} --impure --print-out-paths | cachix push ohheyrj
           done
 
