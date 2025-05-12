@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - 'pkgs/**/default.nix'
+      - 'README.md'
   workflow_dispatch:
 
 jobs:
