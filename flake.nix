@@ -19,7 +19,13 @@
             value = pkgs.callPackage (./pkgs + "/${name}") {};
           }) packageDirs);
         in
-          packages;
+          packages // {
+            # Add `default` as a symlinkJoin of all packages
+            default = pkgs.symlinkJoin {
+              name = "custom-nix-pkgs";
+              paths = builtins.attrValues packages;
+            };
+          };
       in
       {
         packages = forAllSystems importPackages;
