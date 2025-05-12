@@ -1,0 +1,42 @@
+---
+name: Build & Push to Cachix
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    name: Build on ${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: macos-12
+            arch: Intel
+          - os: macos-14
+            arch: AppleSilicon
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v22
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Authenticate with Cachix
+        uses: cachix/cachix-action@v14
+        with:
+          name: ohheyrj
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+
+      - name: Build and Push Packages to Cachix
+        run: |
+          for pkg in $(find pkgs -mindepth 1 -maxdepth 1 -type d -exec basename {} \;); do
+            echo "🔨 Building $pkg"
+            nix build .#${pkg} --print-out-paths | cachix push my-nix-cache
+          done
