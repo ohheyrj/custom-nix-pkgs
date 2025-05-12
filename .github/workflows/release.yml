@@ -1,0 +1,23 @@
+---
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: google-github-actions/release-please-action@v4
+        with:
+          release-type: simple
+          changelog-types: >
+            [
+              {"type":"feat","section":"✨ Features","hidden":false},
+              {"type":"fix","section":"🐛 Fixes","hidden":false},
+              {"type":"docs","section":"📚 Documentation","hidden":false},
+              {"type":"chore","section":"🔧 Maintenance","hidden":false}
+            ]
