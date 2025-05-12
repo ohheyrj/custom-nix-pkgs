@@ -1,0 +1,14 @@
+# Changelog
+
+## 1.0.0 (2025-05-12)
+
+
+### Features
+
+* add default Nix build support ([be3afc3](https://github.com/ohheyrj/custom-nix-pkgs/commit/be3afc3292566bf1e786eae3e407576b2460aa23))
+* **balenaEtcher:** add package at version 2.1.2 ([0c6ede2](https://github.com/ohheyrj/custom-nix-pkgs/commit/0c6ede2f9ab8093c471cef0e5951d974fb6597a8))
+* **garmin-basecamp:** add package at version 4.8.13 ([a2774c8](https://github.com/ohheyrj/custom-nix-pkgs/commit/a2774c84025311c410b4d54e1086bffcc5e8ce81))
+* **kobo-desktop:** add package at 0-unstable-2025-05-11 ([85301c7](https://github.com/ohheyrj/custom-nix-pkgs/commit/85301c79a7e7e6a85fd1fbbee1f1385d976d190c))
+* **openaudible:** add package at version 4.5.3 ([9931434](https://github.com/ohheyrj/custom-nix-pkgs/commit/9931434fb50c555a76146d0d7eb5e7134e13d6bd))
+* **openaudible:** re-init package at version 4.5.3 ([9931434](https://github.com/ohheyrj/custom-nix-pkgs/commit/9931434fb50c555a76146d0d7eb5e7134e13d6bd))
+* **ps-remote-play:** add package at version 8.0.0 ([ce93df8](https://github.com/ohheyrj/custom-nix-pkgs/commit/ce93df88cfedb854c1e7691469890a3ba2f5a70c))
