@@ -32,6 +32,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Update package table in README"
+            git commit -m "docs(README.md): Update package table in README"
             git push
           fi
