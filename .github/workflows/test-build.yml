@@ -18,8 +18,14 @@ jobs:
             arch: AppleSilicon
 
     steps:
-      - name: Checkout
+      - name: Checkout PR branch
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0  # Ensures full history so diff with origin/main works
+
+      - name: Fetch base branch (main)
+        run: git fetch origin ${{ github.base_ref }}
 
       - name: Install Nix
         uses: cachix/install-nix-action@v22
@@ -37,7 +43,7 @@ jobs:
           set -euo pipefail
           export NIXPKGS_ALLOW_UNFREE=1
 
-          changed=$(git diff --name-only origin/main...HEAD | grep '^pkgs/.*/default.nix' | cut -d/ -f2 | sort -u)
+          changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '^pkgs/.*/default.nix' | cut -d/ -f2 | sort -u)
 
           if [ -z "$changed" ]; then
             echo "✅ No package changes detected."
