@@ -1,5 +1,7 @@
 # Custom Nix Pkgs
 
+[![Build & Push to Cachix](https://github.com/ohheyrj/custom-nix-pkgs/actions/workflows/build.yml/badge.svg)](https://github.com/ohheyrj/custom-nix-pkgs/actions/workflows/build.yml)
+
 Repo containing custom Nix packages.
 
 <!--table:start-->
