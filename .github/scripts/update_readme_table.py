@@ -21,32 +21,55 @@ def extract_fields(file_path):
     version = extract(r'\bversion\s*=\s*"([^"]+)"')
     description = extract(r'description\s*=\s*"([^"]+)"')
     license_ = extract(r'license\s*=\s*licenses\.([a-zA-Z0-9_]+)')
-    platforms = ", ".join(re.findall(r'platforms\s*=\s*platforms\.([a-zA-Z0-9_]+)', content))
 
-    return pname, version, description, license_, platforms or "unknown"
+    # Platforms
+    platforms_match1 = re.findall(r'platforms\s*=\s*platforms\.([a-zA-Z0-9_]+)', content)
+    platforms_match2 = re.findall(r'platforms\s*=\s*\[(.*?)\]', content, re.DOTALL)
+    if platforms_match1:
+        platforms = ", ".join(platforms_match1)
+    elif platforms_match2:
+        raw_items = platforms_match2[0]
+        items = re.findall(r'"([^"]+)"', raw_items)
+        platforms = ", ".join(items)
+    else:
+        platforms = "unknown"
+
+    # Homepage and changelog links
+    homepage_url = extract(r'homepage\s*=\s*"([^"]+)"', default=None)
+    changelog_url = extract(r'changelog\s*=\s*"([^"]+)"', default=None)
+
+    homepage = f"[homepage]({homepage_url})" if homepage_url else ""
+    changelog = f"[changelog]({changelog_url})" if changelog_url else ""
+
+    return pname, version, description, license_, platforms, homepage, changelog
+
+
 
 
 def generate_table():
     rows = []
 
     for default_nix in PKG_PATH.glob("*/default.nix"):
-        pname, version, description, license_, platforms = extract_fields(default_nix)
-        rows.append((pname, version, description, license_, platforms))
+        fields = extract_fields(default_nix)
+        rows.append(fields)
 
     # Sort rows by pname (case-insensitive)
     rows.sort(key=lambda row: row[0].lower())
 
     lines = [
         START_MARKER,
-        "| Package | Version | Description | License | Platforms |",
-        "|---------|---------|-------------|---------|-----------|"
+        "| Package | Version | Description | License | Platforms | Homepage | Changelog |",
+        "|---------|---------|-------------|---------|-----------|----------|-----------|"
     ]
 
     for row in rows:
-        lines.append(f"| {row[0]} | {row[1]} | {row[2]} | {row[3]} | {row[4]} |")
+        lines.append(
+            f"| {row[0]} | {row[1]} | {row[2]} | {row[3]} | {row[4]} | {row[5]} | {row[6]} |"
+        )
 
     lines.append(END_MARKER)
     return "\n".join(lines)
+
 
 
 def replace_readme_section(new_table):
