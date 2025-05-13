@@ -35,7 +35,9 @@ stdenvNoCC.mkDerivation {
   ];
   doInstallCheck = true;
   meta = with lib; {
-    description = "PS Remote Play";
+    homepage = "https://remoteplay.dl.playstation.net/remoteplay/lang/gb/";
+    maintainers = [ maintainers.ohheyrj ];
+    description = "PS Remote Play is a free app that lets you stream and play your PS5 or PS4 games on compatible devices like smartphones, tablets, PCs, and Macs, allowing you to game remotely over Wi-Fi or mobile data.";
     license = licenses.unfree;
     platforms = platforms.darwin;
   };

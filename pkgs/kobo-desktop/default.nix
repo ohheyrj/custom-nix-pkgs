@@ -25,7 +25,9 @@ pkgs.stdenvNoCC.mkDerivation {
     '';
 
     meta = with pkgs.lib; {
-      description = "Kobo Desktop";
+      homepage = "https://www.kobo.com/gb/en/p/desktop";
+      maintainers = [ maintainers.ohheyrj ];
+      description = "Kobo Desktop is a free app for Windows and Mac that lets you buy, read, and manage eBooks, as well as sync them with your Kobo eReader.";
       license = licenses.unfree;
       platforms = platforms.darwin;
     };

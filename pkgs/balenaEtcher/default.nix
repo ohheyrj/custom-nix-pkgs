@@ -14,8 +14,8 @@ let
   src = fetchurl {
     url = "https://github.com/balena-io/etcher/releases/download/v${version}/balenaEtcher-${version}-${archSuffix}.dmg";
     sha256 = if stdenvNoCC.system == "aarch64-darwin"
-      then "sha256-sqXbFtmCU+H9dGekzUZwA8Umop4tSYKCx0dm8FHBlgY="  # arm64
-      else "sha256-+jL3IVGLDR9pZaRSJLqGVbwkPXMRvTT2zqQoRZfPO/E="; # x64 (example hash, replace if inaccurate)
+      then "sha256-sqXbFtmCU+H9dGekzUZwA8Umop4tSYKCx0dm8FHBlgY="
+      else "sha256-UeeTKDqxjOBvjdDComO0BbV4w/+f49sz9exk0z6uO2E=";
   };
 
   archSuffix = if stdenvNoCC.system == "aarch64-darwin"
@@ -46,8 +46,11 @@ stdenvNoCC.mkDerivation (finalAttrs: {
   doInstallCheck = true;
 
   meta = with lib; {
-    description = "balenaEtcher";
+    homepage = "https://github.com/balena-io/etcher";
+    changelog = "https://github.com/balena-io/etcher/blob/master/CHANGELOG.md";
+    description = "Flash OS images to SD cards & USB drives, safely and easily.";
     license = licenses.asl20;
     platforms = [ "aarch64-darwin" "x86_64-darwin" ];
+    maintainers = [ maintainers.ohheyrj ];
   };
 })

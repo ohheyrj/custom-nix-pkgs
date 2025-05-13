@@ -48,7 +48,10 @@ stdenvNoCC.mkDerivation {
   ];
   doInstallCheck = true;
   meta = with lib; {
-    description = "Garmin BaseCamp";
+    homepage = "https://www.garmin.com/en-GB/software/basecamp/";
+    changelog = "https://www8.garmin.com/support/download_details.jsp?id=4449";
+    maintainers = [ maintainers.ohheyrj ];
+    description = "Garmin BaseCamp is a free desktop app for planning outdoor adventures and managing GPS data with Garmin devices.";
     license = licenses.unfree;
     platforms = platforms.darwin;
   };
