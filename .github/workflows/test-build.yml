@@ -4,7 +4,9 @@ name: Build Changed Nix Packages
 on:
   pull_request:
     branches: [main]
-
+    paths:
+      - "pkgs/**"
+      - "flake.nix"
 jobs:
   build:
     name: Build on ${{ matrix.arch }}
@@ -22,7 +24,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
-          fetch-depth: 0  # Ensures full history so diff with origin/main works
+          fetch-depth: 0 # Ensures full history so diff with origin/main works
 
       - name: Fetch base branch (main)
         run: git fetch origin ${{ github.base_ref }}

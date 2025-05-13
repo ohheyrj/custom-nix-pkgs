@@ -4,8 +4,9 @@ name: Build & Push to Cachix
 on:
   push:
     branches: [main]
-  pull_request:
-
+    paths:
+      - "pkgs/**"
+      - "flake.nix"
 jobs:
   build:
     name: Build on ${{ matrix.arch }}
@@ -37,7 +38,7 @@ jobs:
         uses: cachix/cachix-action@v14
         with:
           name: ohheyrj
-          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
 
       - name: Build and Push Packages to Cachix
         run: |
@@ -47,4 +48,3 @@ jobs:
             echo "🔨 Building $pkg"
             nix build .#${pkg} --impure --print-out-paths | cachix push ohheyrj
           done
-
