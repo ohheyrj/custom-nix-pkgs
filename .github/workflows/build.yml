@@ -28,6 +28,11 @@ jobs:
           extra_nix_config: |
             experimental-features = nix-command flakes
 
+      - name: Check flake formatting
+        run: |
+          export NIXPKGS_ALLOW_UNFREE=1
+          nix flake check --impure
+
       - name: Authenticate with Cachix
         uses: cachix/cachix-action@v14
         with:
