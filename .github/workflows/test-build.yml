@@ -1,0 +1,49 @@
+---
+name: Build Changed Nix Packages
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build on ${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: macos-13
+            arch: Intel
+          - os: macos-14
+            arch: AppleSilicon
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v22
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Check flake formatting
+        run: |
+          export NIXPKGS_ALLOW_UNFREE=1
+          nix flake check --impure
+
+      - name: Build only changed packages
+        run: |
+          export NIXPKGS_ALLOW_UNFREE=1
+
+          changed=$(git diff --name-only origin/main...HEAD | grep '^pkgs/.*/default.nix' | cut -d/ -f2 | sort -u)
+
+          if [ -z "$changed" ]; then
+            echo "✅ No package changes detected."
+            exit 0
+          fi
+
+          for pkg in $changed; do
+            echo "🔨 Building changed package: $pkg"
+            nix build .#${pkg} --impure
+          done
