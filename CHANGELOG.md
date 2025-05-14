@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.0](https://github.com/ohheyrj/custom-nix-pkgs/compare/v1.1.0...v1.2.0) (2025-05-14)
+
+
+### Features
+
+* **chatterino:** add package at version 2.5.3 ([a4b43a3](https://github.com/ohheyrj/custom-nix-pkgs/commit/a4b43a31ce0f62ce2bb01f87c7708f4b1372e817))
+* **chatterino:** add package at version 2.5.3 ([38de0d0](https://github.com/ohheyrj/custom-nix-pkgs/commit/38de0d08c2de73b546c3e98a7bb364ad34f7b551))
+
 ## [1.1.0](https://github.com/ohheyrj/custom-nix-pkgs/compare/v1.0.0...v1.1.0) (2025-05-14)
 
 
