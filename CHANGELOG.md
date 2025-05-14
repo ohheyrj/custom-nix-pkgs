@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.0](https://github.com/ohheyrj/custom-nix-pkgs/compare/v1.2.0...v1.3.0) (2025-05-14)
+
+
+### Features
+
+* **proton-drive:** add package at version 2.3.0 ([a8e4bf2](https://github.com/ohheyrj/custom-nix-pkgs/commit/a8e4bf2f2f32e7bf39adf16b57412249c719ff6f))
+* **proton-drive:** add package at version 2.3.0 ([de41b50](https://github.com/ohheyrj/custom-nix-pkgs/commit/de41b50a77598d31400d3ae3e78c8aabd9e3f723))
+
 ## [1.2.0](https://github.com/ohheyrj/custom-nix-pkgs/compare/v1.1.0...v1.2.0) (2025-05-14)
 
 
