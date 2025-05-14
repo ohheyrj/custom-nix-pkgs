@@ -45,14 +45,45 @@ jobs:
           set -euo pipefail
           export NIXPKGS_ALLOW_UNFREE=1
 
-          changed=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep '^pkgs/.*/default.nix' | cut -d/ -f2 | sort -u)
+          # Debugging: Show all changed files
+          echo "All changed files:"
+          git diff --name-only origin/${{ github.base_ref }}...HEAD
 
-          if [ -z "$changed" ]; then
-            echo "✅ No package changes detected."
+          # Use safer grep pattern and handle no matches gracefully
+          changed_files=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '^pkgs/[^/]+/default\.nix$' || true)
+
+          if [ -z "$changed_files" ]; then
+            echo "✅ No package default.nix files changed."
+            
+            # Check if flake.nix changed, as it might affect all packages
+            if git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q "^flake.nix$"; then
+              echo "⚠️ flake.nix changed, but no specific package default.nix files."
+              # Could add specific handling for flake.nix changes here if needed
+            fi
+            
             exit 0
           fi
 
-          for pkg in $changed; do
+          # Show detected changed packages
+          echo "Changed packages:"
+          echo "$changed_files" | cut -d/ -f2 | sort -u
+
+          # Build each changed package and track failures
+          failed_pkgs=""
+          for pkg in $(echo "$changed_files" | cut -d/ -f2 | sort -u); do
             echo "🔨 Building changed package: $pkg"
-            nix build .#${pkg} --impure
+            if nix build .#${pkg} --impure; then
+              echo "✅ Successfully built $pkg"
+            else
+              echo "❌ Failed to build $pkg"
+              failed_pkgs="$failed_pkgs $pkg"
+            fi
           done
+
+          # Report build results
+          if [ -n "$failed_pkgs" ]; then
+            echo "❌ Some packages failed to build:$failed_pkgs"
+            exit 1
+          else
+            echo "✅ All changed packages built successfully"
+          fi
