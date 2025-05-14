@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/ohheyrj/custom-nix-pkgs/compare/v1.0.0...v1.1.0) (2025-05-14)
+
+
+### Features
+
+* Adds homepage and metadata for darwin packages ([078753c](https://github.com/ohheyrj/custom-nix-pkgs/commit/078753c16bd94c6425bbb82decdce33927074ff1))
+* **balenaEtcher:** added x86 build ([9f2a35a](https://github.com/ohheyrj/custom-nix-pkgs/commit/9f2a35aa01844f7b96204638e24f69b330cc5301))
+
 ## 1.0.0 (2025-05-12)
 
 
