@@ -8,6 +8,7 @@ Repo containing custom Nix packages.
 | Package | Version | Description | License | Platforms | Homepage | Changelog |
 |---------|---------|-------------|---------|-----------|----------|-----------|
 | balenaEtcher | 2.1.2 | Flash OS images to SD cards & USB drives, safely and easily. | asl20 | aarch64-darwin, x86_64-darwin | [homepage](https://github.com/balena-io/etcher) | [changelog](https://github.com/balena-io/etcher/blob/master/CHANGELOG.md) |
+| chatterino | 2.5.3 | Chat client for Twitch | mit | darwin | [homepage](https://chatterino.com) | [changelog](https://github.com/Chatterino/chatterino2/blob/master/CHANGELOG.md) |
 | garmin-basecamp | 4.8.13 | Garmin BaseCamp is a free desktop app for planning outdoor adventures and managing GPS data with Garmin devices. | unfree | darwin | [homepage](https://www.garmin.com/en-GB/software/basecamp/) | [changelog](https://www8.garmin.com/support/download_details.jsp?id=4449) |
 | kobo-desktop | 0-unstable-2025-05-11 | Kobo Desktop is a free app for Windows and Mac that lets you buy, read, and manage eBooks, as well as sync them with your Kobo eReader. | unfree | darwin | [homepage](https://www.kobo.com/gb/en/p/desktop) |  |
 | OpenAudible | 4.5.3 | OpenAudible is a cross-platform desktop app that lets Audible users download, convert, and manage their audiobooks in MP3 or M4B formats for offline listening. | unfree | darwin | [homepage](https://openaudible.org/) | [changelog](https://openaudible.org/versions) |
