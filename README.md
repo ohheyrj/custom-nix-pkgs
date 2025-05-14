@@ -12,5 +12,6 @@ Repo containing custom Nix packages.
 | garmin-basecamp | 4.8.13 | Garmin BaseCamp is a free desktop app for planning outdoor adventures and managing GPS data with Garmin devices. | unfree | darwin | [homepage](https://www.garmin.com/en-GB/software/basecamp/) | [changelog](https://www8.garmin.com/support/download_details.jsp?id=4449) |
 | kobo-desktop | 0-unstable-2025-05-11 | Kobo Desktop is a free app for Windows and Mac that lets you buy, read, and manage eBooks, as well as sync them with your Kobo eReader. | unfree | darwin | [homepage](https://www.kobo.com/gb/en/p/desktop) |  |
 | OpenAudible | 4.5.3 | OpenAudible is a cross-platform desktop app that lets Audible users download, convert, and manage their audiobooks in MP3 or M4B formats for offline listening. | unfree | darwin | [homepage](https://openaudible.org/) | [changelog](https://openaudible.org/versions) |
+| proton-drive | 2.3.0 | Proton Drive Mac Client | gpl3 | darwin | [homepage](https://proton.me/drive) |  |
 | ps-remote-play | 8.0.0 | PS Remote Play is a free app that lets you stream and play your PS5 or PS4 games on compatible devices like smartphones, tablets, PCs, and Macs, allowing you to game remotely over Wi-Fi or mobile data. | unfree | darwin | [homepage](https://remoteplay.dl.playstation.net/remoteplay/lang/gb/) |  |
 <!--table:end-->
