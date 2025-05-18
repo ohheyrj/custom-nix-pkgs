@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.0](https://github.com/ohheyrj/custom-nix-pkgs/compare/v1.2.0...v1.3.0) (2025-05-18)
+
+
+### Features
+
+* **proton-drive:** add package at version 2.3.0 ([a8e4bf2](https://github.com/ohheyrj/custom-nix-pkgs/commit/a8e4bf2f2f32e7bf39adf16b57412249c719ff6f))
+* **proton-drive:** add package at version 2.3.0 ([de41b50](https://github.com/ohheyrj/custom-nix-pkgs/commit/de41b50a77598d31400d3ae3e78c8aabd9e3f723))
+* **ps-remote-play:** Added upstream PR number ([68fc021](https://github.com/ohheyrj/custom-nix-pkgs/commit/68fc021cd905b7af0a9fc5bb8398944bc09a5c6c))
+* **ps-remote-play:** Added upstream PR number ([0aac6b6](https://github.com/ohheyrj/custom-nix-pkgs/commit/0aac6b6d42abf3014db8b3c3914fbd083d2ae26e))
+
 ## [1.2.0](https://github.com/ohheyrj/custom-nix-pkgs/compare/v1.1.0...v1.2.0) (2025-05-14)
 
 
