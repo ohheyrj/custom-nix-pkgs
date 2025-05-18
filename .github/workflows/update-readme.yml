@@ -4,8 +4,9 @@ name: Update README Table
 on:
   push:
     paths:
-      - 'pkgs/**/default.nix'
-      - 'README.md'
+      - "pkgs/**/default.nix"
+      - "pkgs/**/.pr"
+      - "README.md"
   workflow_dispatch:
 
 jobs:
@@ -19,7 +20,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: "3.x"
 
       - name: Run script to update README
         run: python .github/scripts/update_readme_table.py
@@ -35,3 +36,4 @@ jobs:
             git commit -m "docs(README.md): Update package table in README"
             git push
           fi
+
