@@ -1,6 +1,7 @@
-#!/usr/bin/env python3
-import re
+import json
 import os
+import re
+import urllib.request
 from pathlib import Path
 
 README_PATH = Path("README.md")
@@ -8,8 +9,106 @@ PKG_PATH = Path("pkgs")
 START_MARKER = "<!--table:start-->"
 END_MARKER = "<!--table:end-->"
 
+# GitHub API constants
+GITHUB_API_BASE = "https://api.github.com"
+GITHUB_REPO = "NixOS/nixpkgs"
+
+
+def find_pr_number(package_dir):
+    """
+    Try to find the PR number associated with the package:
+    1. Check for a PR.txt file
+    2. Look in default.nix for PR mentions
+    3. Check for .pr file
+    """
+    # Option 1: Check for PR.txt
+    pr_file = package_dir / "PR.txt"
+    if pr_file.exists():
+        return pr_file.read_text().strip()
+
+    # Option 2: Look in default.nix
+    default_nix = package_dir / "default.nix"
+    if default_nix.exists():
+        content = default_nix.read_text()
+        # Look for common PR mentions in comments like "# PR: 123456" or "# nixpkgs PR: 123456"
+        pr_match = re.search(
+            r"#\s*(?:nixpkgs\s*)?PR[:\s]+(\d+)", content, re.IGNORECASE
+        )
+        if pr_match:
+            return pr_match.group(1)
+
+    # Option 3: Check for .pr file
+    pr_hidden_file = package_dir / ".pr"
+    if pr_hidden_file.exists():
+        return pr_hidden_file.read_text().strip()
+
+    return None
+
+
+def get_pr_status(pr_number):
+    """
+    Fetch the PR status from GitHub API.
+    Returns a tuple of (status, merged)
+    """
+    if not pr_number:
+        return None, False
+
+    try:
+        url = f"{GITHUB_API_BASE}/repos/{GITHUB_REPO}/pulls/{pr_number}"
+        # Create a request with a user agent to avoid GitHub API limitations
+        req = urllib.request.Request(url, headers={"User-Agent": "NixPkgs-PR-Checker"})
+
+        with urllib.request.urlopen(req) as response:
+            data = json.loads(response.read().decode())
+
+            # Check if PR is merged
+            merged = data.get("merged", False)
+
+            # Get the current state (open, closed)
+            state = data.get("state", "unknown")
+
+            # Determine status text
+            if merged:
+                status = "merged"
+            elif state == "open":
+                status = "open"
+            elif state == "closed":
+                status = "closed"
+            else:
+                status = "unknown"
+
+            return status, merged
+    except Exception as e:
+        print(f"Error fetching PR status for #{pr_number}: {e}")
+        return "unknown", False
+
+
+def get_pr_links_and_status(pr_number):
+    """Generate PR and tracker links if PR number is available, and fetch PR status"""
+    if not pr_number:
+        return "", "", ""
+
+    pr_link = f"[PR #{pr_number}](https://github.com/NixOS/nixpkgs/pull/{pr_number})"
+    tracker_link = f"[Tracker](https://nixpkgs-tracker.ocfox.me/?pr={pr_number})"
+
+    # Get PR status
+    status, merged = get_pr_status(pr_number)
+
+    # Create status text with emoji
+    if status == "merged":
+        status_text = "✅ Merged"
+    elif status == "open":
+        status_text = "🔄 Open"
+    elif status == "closed":
+        status_text = "❌ Closed"
+    else:
+        status_text = "❓ Unknown"
+
+    return pr_link, tracker_link, status_text
+
 
 def extract_fields(file_path):
+    package_dir = file_path.parent
     with open(file_path) as f:
         content = f.read()
 
@@ -20,11 +119,13 @@ def extract_fields(file_path):
     pname = extract(r'\bpname\s*=\s*"([^"]+)"')
     version = extract(r'\bversion\s*=\s*"([^"]+)"')
     description = extract(r'description\s*=\s*"([^"]+)"')
-    license_ = extract(r'license\s*=\s*licenses\.([a-zA-Z0-9_]+)')
+    license_ = extract(r"license\s*=\s*licenses\.([a-zA-Z0-9_]+)")
 
     # Platforms
-    platforms_match1 = re.findall(r'platforms\s*=\s*platforms\.([a-zA-Z0-9_]+)', content)
-    platforms_match2 = re.findall(r'platforms\s*=\s*\[(.*?)\]', content, re.DOTALL)
+    platforms_match1 = re.findall(
+        r"platforms\s*=\s*platforms\.([a-zA-Z0-9_]+)", content
+    )
+    platforms_match2 = re.findall(r"platforms\s*=\s*\[(.*?)\]", content, re.DOTALL)
     if platforms_match1:
         platforms = ", ".join(platforms_match1)
     elif platforms_match2:
@@ -41,9 +142,22 @@ def extract_fields(file_path):
     homepage = f"[homepage]({homepage_url})" if homepage_url else ""
     changelog = f"[changelog]({changelog_url})" if changelog_url else ""
 
-    return pname, version, description, license_, platforms, homepage, changelog
+    # Find PR number and create links
+    pr_number = find_pr_number(package_dir)
+    pr_link, tracker_link, status = get_pr_links_and_status(pr_number)
 
-
+    return (
+        pname,
+        version,
+        description,
+        license_,
+        platforms,
+        homepage,
+        changelog,
+        pr_link,
+        tracker_link,
+        status,
+    )
 
 
 def generate_table():
@@ -58,27 +172,23 @@ def generate_table():
 
     lines = [
         START_MARKER,
-        "| Package | Version | Description | License | Platforms | Homepage | Changelog |",
-        "|---------|---------|-------------|---------|-----------|----------|-----------|"
+        "| Package | Version | Description | License | Platforms | Homepage | Changelog | PR | Tracker | Status |",
+        "|---------|---------|-------------|---------|-----------|----------|-----------|----|---------|---------|\n",
     ]
 
     for row in rows:
         lines.append(
-            f"| {row[0]} | {row[1]} | {row[2]} | {row[3]} | {row[4]} | {row[5]} | {row[6]} |"
+            f"| {row[0]} | {row[1]} | {row[2]} | {row[3]} | {row[4]} | {row[5]} | {row[6]} | {row[7]} | {row[8]} | {row[9]} |"
         )
 
     lines.append(END_MARKER)
     return "\n".join(lines)
 
 
-
 def replace_readme_section(new_table):
     content = README_PATH.read_text()
 
-    pattern = re.compile(
-        rf"{START_MARKER}.*?{END_MARKER}",
-        re.DOTALL
-    )
+    pattern = re.compile(rf"{START_MARKER}.*?{END_MARKER}", re.DOTALL)
 
     new_content = pattern.sub(new_table, content)
     README_PATH.write_text(new_content)
@@ -87,3 +197,4 @@ def replace_readme_section(new_table):
 if __name__ == "__main__":
     table = generate_table()
     replace_readme_section(table)
+
