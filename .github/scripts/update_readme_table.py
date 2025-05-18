@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import json
 import os
 import re
@@ -24,7 +25,9 @@ def find_pr_number(package_dir):
     # Option 1: Check for PR.txt
     pr_file = package_dir / "PR.txt"
     if pr_file.exists():
-        return pr_file.read_text().strip()
+        pr_number = pr_file.read_text().strip()
+        print(f"Found PR number {pr_number} in PR.txt for {package_dir.name}")
+        return pr_number
 
     # Option 2: Look in default.nix
     default_nix = package_dir / "default.nix"
@@ -35,13 +38,20 @@ def find_pr_number(package_dir):
             r"#\s*(?:nixpkgs\s*)?PR[:\s]+(\d+)", content, re.IGNORECASE
         )
         if pr_match:
-            return pr_match.group(1)
+            pr_number = pr_match.group(1)
+            print(
+                f"Found PR number {pr_number} in default.nix comments for {package_dir.name}"
+            )
+            return pr_number
 
     # Option 3: Check for .pr file
     pr_hidden_file = package_dir / ".pr"
     if pr_hidden_file.exists():
-        return pr_hidden_file.read_text().strip()
+        pr_number = pr_hidden_file.read_text().strip()
+        print(f"Found PR number {pr_number} in .pr file for {package_dir.name}")
+        return pr_number
 
+    print(f"No PR number found for {package_dir.name}")
     return None
 
 
@@ -58,8 +68,16 @@ def get_pr_status(pr_number):
         # Create a request with a user agent to avoid GitHub API limitations
         req = urllib.request.Request(url, headers={"User-Agent": "NixPkgs-PR-Checker"})
 
+        # Print debug info
+        print(f"Fetching PR status for #{pr_number} from {url}")
+
         with urllib.request.urlopen(req) as response:
             data = json.loads(response.read().decode())
+
+            # Debug: Print the response
+            print(
+                f"API Response for PR #{pr_number}: {json.dumps(data, indent=2)[:500]}..."
+            )
 
             # Check if PR is merged
             merged = data.get("merged", False)
@@ -77,10 +95,21 @@ def get_pr_status(pr_number):
             else:
                 status = "unknown"
 
+            print(f"PR #{pr_number} status: {status}, merged: {merged}")
             return status, merged
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            print(f"PR #{pr_number} not found (404)")
+            return "not found", False
+        elif e.code == 403:
+            print(f"Rate limit exceeded when checking PR #{pr_number}")
+            return "rate limited", False
+        else:
+            print(f"HTTP Error {e.code} fetching PR #{pr_number}: {e}")
+            return "error", False
     except Exception as e:
         print(f"Error fetching PR status for #{pr_number}: {e}")
-        return "unknown", False
+        return "error", False
 
 
 def get_pr_links_and_status(pr_number):
@@ -101,9 +130,16 @@ def get_pr_links_and_status(pr_number):
         status_text = "🔄 Open"
     elif status == "closed":
         status_text = "❌ Closed"
+    elif status == "not found":
+        status_text = "❓ Not Found"
+    elif status == "rate limited":
+        status_text = "⚠️ API Limited"
+    elif status == "error":
+        status_text = "⚠️ API Error"
     else:
         status_text = "❓ Unknown"
 
+    print(f"Final status for PR #{pr_number}: {status_text}")
     return pr_link, tracker_link, status_text
 
 
@@ -162,26 +198,37 @@ def extract_fields(file_path):
 
 def generate_table():
     rows = []
+    print(f"Scanning packages in {PKG_PATH}")
 
     for default_nix in PKG_PATH.glob("*/default.nix"):
+        print(f"\nProcessing package: {default_nix.parent.name}")
         fields = extract_fields(default_nix)
         rows.append(fields)
 
     # Sort rows by pname (case-insensitive)
     rows.sort(key=lambda row: row[0].lower())
+    print(f"\nGenerated table with {len(rows)} packages")
 
-    lines = [
-        START_MARKER,
-        "| Package | Version | Description | License | Platforms | Homepage | Changelog | PR | Tracker | Status |",
-        "|---------|---------|-------------|---------|-----------|----------|-----------|----|---------|---------|\n",
-    ]
+    # Start with the marker
+    lines = [START_MARKER]
 
+    # Add the header row with proper formatting
+    lines.append(
+        "| Package | Version | Description | License | Platforms | Homepage | Changelog | PR | Tracker | Status |"
+    )
+    lines.append(
+        "|---------|---------|-------------|---------|-----------|----------|-----------|----|---------|---------|\n"
+    )
+
+    # Add each package row with proper newlines between rows
     for row in rows:
-        lines.append(
-            f"| {row[0]} | {row[1]} | {row[2]} | {row[3]} | {row[4]} | {row[5]} | {row[6]} | {row[7]} | {row[8]} | {row[9]} |"
-        )
+        package_line = f"| {row[0]} | {row[1]} | {row[2]} | {row[3]} | {row[4]} | {row[5]} | {row[6]} | {row[7]} | {row[8]} | {row[9]} |"
+        lines.append(package_line)
 
+    # End with the marker
     lines.append(END_MARKER)
+
+    # Join with newlines to ensure proper markdown table formatting
     return "\n".join(lines)
 
 
@@ -191,10 +238,22 @@ def replace_readme_section(new_table):
     pattern = re.compile(rf"{START_MARKER}.*?{END_MARKER}", re.DOTALL)
 
     new_content = pattern.sub(new_table, content)
+
+    # Ensure proper line endings for GitHub markdown
+    new_content = new_content.replace("\r\n", "\n")
+
+    # Print a preview of what we're about to write
+    print("\nPreview of updated README section:")
+    table_section = pattern.search(new_content).group(0)
+    print(table_section[:500] + "..." if len(table_section) > 500 else table_section)
+
+    # Write the updated content
     README_PATH.write_text(new_content)
+    print(f"Updated README at {README_PATH}")
 
 
 if __name__ == "__main__":
+    print("Starting README table update process")
     table = generate_table()
     replace_readme_section(table)
-
+    print("README table update completed")
