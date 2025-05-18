@@ -89,18 +89,18 @@ Packages are grouped by category, and each entry includes metadata such as:
 ## 🎵 Media
 
 
+### 🧰 kobo-desktop `v0-unstable-2025-05-11`
+- 💡 **Description:** Kobo Desktop is a free app for Windows and Mac that lets you buy, read, and manage eBooks, as well as sync them with your Kobo eReader.
+- 🛡️ **License:** unfree
+- 🖥️ **Platforms:** unknown
+- 🌐 **Homepage:** [kobo-desktop Website](https://www.kobo.com/gb/en/p/desktop)
+
 ### 🧰 OpenAudible `v4.5.3`
 - 💡 **Description:** OpenAudible is a cross-platform desktop app that lets Audible users download, convert, and manage their audiobooks in MP3 or M4B formats for offline listening.
 - 🛡️ **License:** unfree
 - 🖥️ **Platforms:** darwin
 - 🌐 **Homepage:** [OpenAudible Website](https://openaudible.org/)
 - 📄 **Changelog:** [CHANGELOG](https://openaudible.org/versions)
-
-### 🧰 kobo-desktop `v0-unstable-2025-05-11`
-- 💡 **Description:** Kobo Desktop is a free app for Windows and Mac that lets you buy, read, and manage eBooks, as well as sync them with your Kobo eReader.
-- 🛡️ **License:** unfree
-- 🖥️ **Platforms:** unknown
-- 🌐 **Homepage:** [kobo-desktop Website](https://www.kobo.com/gb/en/p/desktop)
 
 
 
