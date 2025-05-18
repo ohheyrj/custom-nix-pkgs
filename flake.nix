@@ -1,3 +1,4 @@
+
 {
   description = "Custom Nix Packages";
 
@@ -20,14 +21,31 @@
             };
           };
 
-          packageDirs = builtins.attrNames (builtins.readDir ./pkgs);
+          # Recursively find all pkgs/**/default.nix files
+          recursePkgs = dir:
+            let
+              entries = builtins.attrNames (builtins.readDir dir);
+              resolved = builtins.concatLists (builtins.map (name:
+                let
+                  sub = dir + "/${name}";
+                  subEntries = builtins.readDir sub;
+                in
+                  if builtins.pathExists (sub + "/default.nix") then
+                    [ { name = name; path = sub; } ]
+                  else if subEntries != {} then
+                    recursePkgs sub
+                  else
+                    []
+              ) entries);
+            in resolved;
 
-          packageSet = builtins.listToAttrs (map (name: {
+          packages = recursePkgs ./pkgs;
+
+          packageSet = builtins.listToAttrs (map ({ name, path }: {
             inherit name;
-            value = pkgs.callPackage (./pkgs + "/${name}") {};
-          }) packageDirs);
+            value = pkgs.callPackage path {};
+          }) packages);
 
-          # Only include packages compatible with the current system in `default`
           defaultPackages = pkgs.lib.attrValues (
             pkgs.lib.filterAttrs (_: pkg:
               !(pkg.meta ? platforms) || pkgs.lib.elem system pkg.meta.platforms
@@ -53,3 +71,4 @@
       );
     };
 }
+
